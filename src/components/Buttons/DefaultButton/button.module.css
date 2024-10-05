@@ -2,8 +2,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 80px;
+  width: 100px;
   height: 30px;
+  font-size: large;
+  border-radius: 5px;
+  border: 1px solid black;
+  outline: none;
 }
 
 .button:hover {

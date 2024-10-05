@@ -2,10 +2,10 @@ import { StrictMode } from "react";
 
 import { createRoot } from "react-dom/client";
 
-import { Button } from "./components/Buttons/DefaultButton/Button";
+import { App } from "./App";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <Button title={"123"} />
+    <App />
   </StrictMode>,
 );
