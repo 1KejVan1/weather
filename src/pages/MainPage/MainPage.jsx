@@ -2,7 +2,9 @@ import React from "react";
 
 // import { translateCityName } from "../../api/api";
 import { Button } from "../../components/Buttons/DefaultButton/Button";
+import { List } from "../../components/List/List";
 import { TextInput } from "../../components/TextInputs/DefaultTextInput/TextInput";
+import { WeatherCard } from "../../components/WeatherCard/WeatherCard";
 import styles from "./page.module.css";
 
 export class MainPage extends React.Component {
@@ -23,7 +25,7 @@ export class MainPage extends React.Component {
   async fetchAll() {
     const countryCode = await this.fetchCountryCode();
     const [lat, lon] = await this.fetchCityCoordinats(countryCode);
-    this.fetchWeather(lat, lon);
+    await this.fetchWeather(lat, lon);
   }
 
   async fetchCountryCode() {
@@ -65,7 +67,22 @@ export class MainPage extends React.Component {
     );
 
     if (weatherResponse.ok) {
-      this.setState({ weather: await weatherResponse.json() });
+      const obj = await weatherResponse.json();
+      const weather = {
+        discription:
+          obj.weather[0].description[0].toUpperCase() +
+          obj.weather[0].description.slice(1),
+        temp: obj.main.temp,
+        feels_like: obj.main.feels_like,
+        pressure: obj.main.pressure,
+        humidity: obj.main.humidity,
+        visibility: obj.visibility,
+        wind_speed: obj.wind.speed,
+        gust: obj.wind.gust,
+        clouds: obj.clouds.all,
+      };
+
+      this.setState({ weather: weather });
     }
   }
 
@@ -90,6 +107,12 @@ export class MainPage extends React.Component {
             onChange={this.setCityName}
           />
           <Button onClick={this.fetchAll}>Найти</Button>
+        </div>
+
+        <div>
+          {Object.keys(this.state.weather).length > 0 && (
+            <WeatherCard weather={this.state.weather} />
+          )}
         </div>
       </div>
     );
