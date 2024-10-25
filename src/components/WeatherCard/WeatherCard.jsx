@@ -1,6 +1,6 @@
 import React from "react";
 
-import rain from "../../assets/heavy-rain.png";
+import { fieldsNamesArray } from "../../constants";
 import { List } from "../List/List";
 import styles from "./weathercard.module.css";
 
@@ -14,7 +14,10 @@ export class WeatherCard extends React.Component {
       <div className={styles.container}>
         <div className={styles.container_header}>
           <div className={styles.container_image}>
-            <img className={styles.image} src={rain} />
+            <img
+              className={styles.image}
+              src={`https://openweathermap.org/img/wn/${this.props.weather.iconId}@2x.png`}
+            />
           </div>
           <div className={styles.header_title}>
             <div className={styles.degrees_text}>
@@ -28,7 +31,7 @@ export class WeatherCard extends React.Component {
         <div className={styles.discription_text}>
           {this.props.weather.discription}
         </div>
-        <List />
+        <List objects={this.props.weather} fields={fieldsNamesArray} />
       </div>
     );
   }

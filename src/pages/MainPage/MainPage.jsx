@@ -1,11 +1,22 @@
 import React from "react";
 
-// import { translateCityName } from "../../api/api";
+import Countries from "countries-api";
+
 import { Button } from "../../components/Buttons/DefaultButton/Button";
 import { List } from "../../components/List/List";
 import { TextInput } from "../../components/TextInputs/DefaultTextInput/TextInput";
 import { WeatherCard } from "../../components/WeatherCard/WeatherCard";
 import styles from "./page.module.css";
+
+const url = "https://deep-translate1.p.rapidapi.com/language/translate/v2";
+const options = {
+  method: "POST",
+  headers: {
+    "x-rapidapi-key": "57d56ec981msh0ae7c90c557fc8bp188128jsn2b83cad3b253",
+    "x-rapidapi-host": "deep-translate1.p.rapidapi.com",
+    "Content-Type": "application/json",
+  },
+};
 
 export class MainPage extends React.Component {
   constructor(props) {
@@ -15,28 +26,55 @@ export class MainPage extends React.Component {
       countryName: "",
       weather: {},
     };
-    this.fetchCountryCode = this.fetchCountryCode.bind(this);
     this.fetchCityCoordinats = this.fetchCityCoordinats.bind(this);
     this.fetchAll = this.fetchAll.bind(this);
     this.setCityName = this.setCityName.bind(this);
     this.setCountryName = this.setCountryName.bind(this);
+    this.translateCountryName = this.translateCountryName.bind(this);
+    this.getCountryCode = this.getCountryCode.bind(this);
   }
 
   async fetchAll() {
-    const countryCode = await this.fetchCountryCode();
-    const [lat, lon] = await this.fetchCityCoordinats(countryCode);
-    await this.fetchWeather(lat, lon);
+    const translatedName = await this.translateCountryName();
+    const countryCode = this.getCountryCode(translatedName);
+    if (countryCode) {
+      const [lat, lon] = await this.fetchCityCoordinats(countryCode);
+
+      if (!lat && !lon) {
+        alert("Город не найден. Попробуйте ввести название по-другому.");
+      } else {
+        await this.fetchWeather(lat, lon);
+      }
+    } else {
+      alert("Страна не найдена. Попробуйте ввести название по-другому.");
+    }
   }
 
-  async fetchCountryCode() {
-    const countryResponse = await fetch(
-      `http://api.openweathermap.org/geo/1.0/direct?q=${this.state.countryName}&limit=1&appid=3b2f72a07156e4f1ceac1d71e3e3619d`,
-    );
+  async translateCountryName() {
+    const response = await fetch(url, {
+      ...options,
+      body: JSON.stringify({
+        q: this.state.countryName,
+        source: "ru",
+        target: "en",
+      }),
+    });
 
-    if (countryResponse.ok) {
-      const obj = await countryResponse.json();
+    if (response.ok) {
+      const obj = await response.json();
+      return obj.data.translations.translatedText;
+    } else {
+      console.log(response.statusText);
+    }
+  }
 
-      return obj[0].country;
+  getCountryCode(countryName) {
+    const country = Countries.findByName(countryName);
+
+    if (!country.error) {
+      return country.data[0].cca2;
+    } else {
+      return null;
     }
   }
 
@@ -44,7 +82,7 @@ export class MainPage extends React.Component {
     let lat = 0,
       lon = 0;
     const cityResponse = await fetch(
-      `http://api.openweathermap.org/geo/1.0/direct?q=${this.state.cityName}&limit=5&appid=3b2f72a07156e4f1ceac1d71e3e3619d`,
+      `http://api.openweathermap.org/geo/1.0/direct?q=${this.state.cityName}&limit=10&appid=3b2f72a07156e4f1ceac1d71e3e3619d`,
     );
 
     if (cityResponse.ok) {
@@ -80,6 +118,7 @@ export class MainPage extends React.Component {
         wind_speed: obj.wind.speed,
         gust: obj.wind.gust,
         clouds: obj.clouds.all,
+        iconId: obj.weather[0].icon,
       };
 
       this.setState({ weather: weather });

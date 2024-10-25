@@ -10,10 +10,10 @@ export class List extends React.Component {
   render() {
     return (
       <ul className={styles.list}>
-        {Array.from({ length: 5 }).map((item) => (
+        {this.props.fields.map((item) => (
           <li className={styles.list_item}>
-            <span className={styles.list_item_title}>Влажность</span>
-            <span>100%</span>
+            <span className={styles.list_item_title}>{item.rus_title}</span>
+            <span>{this.props.objects[item.eng_title]}</span>
           </li>
         ))}
       </ul>
