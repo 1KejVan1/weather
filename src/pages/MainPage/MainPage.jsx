@@ -132,11 +132,6 @@ export class MainPage extends React.Component {
     this.setState({ countryName: countryName });
   }
 
-  componentDidMount() {
-    console.log(import.meta.env.VITE_OPTIONS_API_KEY);
-    console.log(import.meta.env.VITE_WEATHER_API_KEY);
-  }
-
   render() {
     return (
       <div className={styles.container}>
