@@ -3,7 +3,6 @@ import React from "react";
 import Countries from "countries-api";
 
 import { Button } from "../../components/Buttons/DefaultButton/Button";
-import { List } from "../../components/List/List";
 import { TextInput } from "../../components/TextInputs/DefaultTextInput/TextInput";
 import { WeatherCard } from "../../components/WeatherCard/WeatherCard";
 import styles from "./page.module.css";
@@ -12,7 +11,7 @@ const url = "https://deep-translate1.p.rapidapi.com/language/translate/v2";
 const options = {
   method: "POST",
   headers: {
-    "x-rapidapi-key": "57d56ec981msh0ae7c90c557fc8bp188128jsn2b83cad3b253",
+    "x-rapidapi-key": import.meta.env.VITE_OPTIONS_API_KEY,
     "x-rapidapi-host": "deep-translate1.p.rapidapi.com",
     "Content-Type": "application/json",
   },
@@ -82,7 +81,7 @@ export class MainPage extends React.Component {
     let lat = 0,
       lon = 0;
     const cityResponse = await fetch(
-      `http://api.openweathermap.org/geo/1.0/direct?q=${this.state.cityName}&limit=10&appid=3b2f72a07156e4f1ceac1d71e3e3619d`,
+      `http://api.openweathermap.org/geo/1.0/direct?q=${this.state.cityName}&limit=10&appid=${import.meta.env.VITE_WEATHER_API_KEY}`,
     );
 
     if (cityResponse.ok) {
@@ -101,7 +100,7 @@ export class MainPage extends React.Component {
 
   async fetchWeather(lat = 0, lon = 0) {
     const weatherResponse = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=3b2f72a07156e4f1ceac1d71e3e3619d&lang=ru&units=metric`,
+      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${import.meta.env.VITE_WEATHER_API_KEY}&lang=ru&units=metric`,
     );
 
     if (weatherResponse.ok) {
@@ -131,6 +130,11 @@ export class MainPage extends React.Component {
 
   setCountryName(countryName = "") {
     this.setState({ countryName: countryName });
+  }
+
+  componentDidMount() {
+    console.log(import.meta.env.VITE_OPTIONS_API_KEY);
+    console.log(import.meta.env.VITE_WEATHER_API_KEY);
   }
 
   render() {
